@@ -132,7 +132,6 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
             requestPermissionForCameraAndMicrophone();
         } else {
             createLocalMedia();
-            createVideoClient();
         }
     }
 
@@ -150,21 +149,6 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
         if (thumbnailVideoView != null) {
             localVideoTrack.addRenderer(thumbnailVideoView);
         }
-    }
-
-    private void createVideoClient() {
-        /*
-         * Create a VideoClient allowing you to connect to a Room
-         */
-
-        // OPTION 1- Generate an access token from the getting started portal
-        // https://www.twilio.com/console/video/dev-tools/testing-tools
-        if (accessToken != null) {
-            videoClient = new VideoClient(getContext(), accessToken);
-        }
-
-        // OPTION 2- Retrieve an access token from your own web app
-        // retrieveAccessTokenfromServer();
     }
 
     // ===== PERMISSIONS ===========================================================================
@@ -270,10 +254,13 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
 
     // ====== CONNECTING ===========================================================================
 
-    public void connectToRoom(String roomName) {
+    public void connectToRoom(String accessToken) {
+        /*
+         * Create a VideoClient allowing you to connect to a Room
+         */
         setAudioFocus(true);
+        videoClient = new VideoClient(getContext(), accessToken);
         ConnectOptions connectOptions = new ConnectOptions.Builder()
-                .roomName(roomName)
                 .localMedia(localMedia)
                 .build();
         room = videoClient.connect(connectOptions, roomListener());

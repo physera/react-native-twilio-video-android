@@ -48,8 +48,8 @@ public class CustomTwilioVideoViewManager extends SimpleViewManager<CustomTwilio
     public void receiveCommand(CustomTwilioVideoView view, int commandId, @Nullable ReadableArray args) {
         switch (commandId) {
             case CONNECT_TO_ROOM:
-                String room = args.getString(0);
-                view.connectToRoom(room);
+                String accessToken = args.getString(0);
+                view.connectToRoom(accessToken);
                 break;
             case DISCONNECT:
                 view.disconnect();
