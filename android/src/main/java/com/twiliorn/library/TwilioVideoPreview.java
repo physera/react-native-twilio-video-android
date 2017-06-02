@@ -18,9 +18,7 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.twilio.video.CameraCapturer;
 import com.twilio.video.ConnectOptions;
 import com.twilio.video.LocalAudioTrack;
-import com.twilio.video.LocalMedia;
 import com.twilio.video.LocalVideoTrack;
-import com.twilio.video.Media;
 import com.twilio.video.Participant;
 import com.twilio.video.RNVideoView;
 

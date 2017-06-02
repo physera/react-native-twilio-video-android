@@ -32,6 +32,8 @@ import com.twiliorn.library.permissions.PermissionsResult;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 
 import rx.functions.Action1;
@@ -216,6 +218,11 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
     }
 
     @Override
+    public void onHostPause() {
+        Log.i("CustomTwilioVideoView", "Host pause");
+    }
+
+    @Override
     public void onHostDestroy() {
         /*
          * Always disconnect from the room before leaving the Activity to
@@ -246,10 +253,15 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
          * Create a VideoClient allowing you to connect to a Room
          */
         setAudioFocus(true);
-        ConnectOptions connectOptions = new ConnectOptions.Builder(accessToken)
-                .localMedia(localMedia)
-                .build();
-        room = Video.connect(getContext(), connectOptions, roomListener());
+        ConnectOptions.Builder connectOptionsBuilder = new ConnectOptions.Builder(accessToken);
+
+        if (localAudioTrack != null) {
+            connectOptionsBuilder.audioTracks(Arrays.asList(localAudioTrack));
+        }
+        if (localVideoTrack != null) {
+            connectOptionsBuilder.videoTracks(Arrays.asList(localVideoTrack));
+        }
+        room = Video.connect(getContext(), connectOptionsBuilder.build(), roomListener());
     }
 
     private void setAudioFocus(boolean focus) {
@@ -334,9 +346,8 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
                 pushEvent(CustomTwilioVideoView.this, ON_CONNECTED, event);
 
                 //noinspection LoopStatementThatDoesntLoop
-                for (Map.Entry<String, Participant> entry : room.getParticipants()
-                                                                .entrySet()) {
-                    addParticipant(entry.getValue());
+                for (Participant participant : room.getParticipants()) {
+                    addParticipant(participant);
                     break;
                 }
             }
@@ -344,7 +355,7 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
             @Override
             public void onConnectFailure(Room room, TwilioException e) {
                 WritableMap event = new WritableNativeMap();
-                event.putString("reason", e.message);
+                event.putString("reason", e.getExplanation());
                 pushEvent(CustomTwilioVideoView.this, ON_CONNECT_FAILURE, event);
             }
 
