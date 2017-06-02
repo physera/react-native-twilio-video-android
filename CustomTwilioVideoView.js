@@ -12,12 +12,6 @@ import React, { PropTypes, Component } from 'react';
 
 const propTypes = {
     ...View.propTypes,
-
-    /**
-     * Twilio Access Token
-     */
-    twilioAccessToken: PropTypes.string.isRequired,
-
     /**
      * Callback that is called when camera source changes
      */
@@ -36,7 +30,7 @@ const propTypes = {
     /**
      * Callback that is called when user is connected to a room.
      */
-    onConnected: PropTypes.func,
+    onRoomDidConnect: PropTypes.func,
 
     /**
      * Callback that is called when connecting to room fails.
@@ -46,17 +40,17 @@ const propTypes = {
     /**
      * Callback that is called when user is disconnected from room.
      */
-    onDisconnected: PropTypes.func,
+    onRoomDidDisconnect: PropTypes.func,
 
     /**
      * Callback called a participant enters a room.
      */
-    onParticipantConnected: PropTypes.func,
+    onRoomParticipantDidConnect: PropTypes.func,
 
     /**
      * Callback that is called when a participant exits a room.
      */
-    onParticipantDisconnected: PropTypes.func,
+    onRoomParticipantDidDisconnect: PropTypes.func,
 
 };
 
@@ -74,7 +68,7 @@ class CustomTwilioVideoView extends Component {
         this.runCommand(nativeEvents.connectToRoom, [accessToken]);
     }
 
-    disconnect() {
+    endCall() {
         this.runCommand(nativeEvents.disconnect, []);
     }
 

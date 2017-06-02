@@ -64,11 +64,11 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
         String ON_CAMERA_SWITCHED          = "onCameraSwitched";
         String ON_VIDEO_CHANGED            = "onVideoChanged";
         String ON_AUDIO_CHANGED            = "onAudioChanged";
-        String ON_CONNECTED                = "onConnected";
+        String ON_CONNECTED                = "onRoomDidConnect";
         String ON_CONNECT_FAILURE          = "onConnectFailure";
-        String ON_DICONNECTED              = "onDisconnected";
-        String ON_PARTICIPANT_CONNECTED    = "onParticipantConnected";
-        String ON_PARTICIPANT_DISCONNECTED = "onParticipantDisconnected";
+        String ON_DICONNECTED              = "onRoomDidDisconnect";
+        String ON_PARTICIPANT_CONNECTED    = "onRoomParticipantDidConnect";
+        String ON_PARTICIPANT_DISCONNECTED = "onRoomParticipantDidDisconnect";
 
     }
 
