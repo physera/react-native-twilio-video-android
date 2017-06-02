@@ -1,0 +1,22 @@
+{
+  "name": "react-native-twilio-video-android",
+  "version": "0.0.1",
+  "description": "Twilio Video for RN on Android",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/healthcoda/react-native-twilio-video-android.git"
+  },
+  "keywords": [
+    "twilio",
+    "video",
+    "react",
+    "react-native",
+    "android"
+  ],
+  "author": "Jonathan Chang",
+  "bugs": {
+    "url": "https://github.com/healthcoda/react-native-twilio-video-android/issues"
+  },
+  "homepage": "https://github.com/healthcoda/react-native-twilio-video-android#readme"
+}
