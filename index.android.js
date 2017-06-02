@@ -1,11 +1,9 @@
-import SimpleTwilioVideo from './SimpleTwilioVideo';
-import CustomizedTwilioVideo from './CustomizedTwilioVideo';
+import CustomTwilioVideoView from './CustomTwilioVideoView';
 import TwilioRemotePreview from './TwilioRemotePreview';
-import TwilioVideoPreview from './TwilioVidePreview';
+import TwilioVideoPreview from './TwilioVideoPreview';
 
 module.exports = {
-  SimpleTwilioVideo,
-  TwilioVideo: CustomizedTwilioVideo,
+  TwilioVideo: CustomTwilioVideoView,
   TwilioRemotePreview,
   TwilioVideoPreview,
 };
