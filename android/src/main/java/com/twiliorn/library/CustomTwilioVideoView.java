@@ -9,7 +9,6 @@ import android.support.annotation.StringDef;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.View;
-import android.widget.FrameLayout;
 
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.WritableMap;
@@ -48,7 +47,7 @@ import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_PARTICIPANT_C
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_PARTICIPANT_DISCONNECTED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_VIDEO_CHANGED;
 
-public class CustomTwilioVideoView extends FrameLayout implements LifecycleEventListener {
+public class CustomTwilioVideoView extends View implements LifecycleEventListener {
 
     private static final String TAG = "CustomTwilioVideoView";
 
@@ -105,15 +104,14 @@ public class CustomTwilioVideoView extends FrameLayout implements LifecycleEvent
     private boolean         disconnectedFromOnDestroy;
     private String          accessToken;
 
-    public CustomTwilioVideoView(ThemedReactContext themedReactContext) {
-        super(themedReactContext);
-        this.themedReactContext = themedReactContext;
+    public CustomTwilioVideoView(ThemedReactContext context) {
+        super(context);
+        this.themedReactContext = context;
         this.eventEmitter = themedReactContext.getJSModule(RCTEventEmitter.class);
         this.permissionsManager = PermissionsManager.get(themedReactContext);
 
         // add lifecycle for onResume and on onPause
         themedReactContext.addLifecycleEventListener(this);
-        inflate(themedReactContext, R.layout.layout_video_preview, this);
 
         primaryVideoView = (RNVideoView) findViewById(R.id.primary_video_view);
         thumbnailVideoView = (RNVideoView) findViewById(R.id.thumbnail_video_view);
