@@ -13,6 +13,8 @@ import android.view.View;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
+import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.twilio.video.AudioTrack;
@@ -32,9 +34,8 @@ import com.twiliorn.library.permissions.PermissionsResult;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Map;
+import java.util.List;
 
 import rx.functions.Action1;
 
@@ -64,7 +65,7 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
         String ON_CAMERA_SWITCHED          = "onCameraSwitched";
         String ON_VIDEO_CHANGED            = "onVideoChanged";
         String ON_AUDIO_CHANGED            = "onAudioChanged";
-        String ON_CONNECTED                = "onRoomDidConnect";
+        String ON_CONNECTED                = "onConnected";
         String ON_CONNECT_FAILURE          = "onConnectFailure";
         String ON_DICONNECTED              = "onRoomDidDisconnect";
         String ON_PARTICIPANT_CONNECTED    = "onRoomParticipantDidConnect";
@@ -343,10 +344,18 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
             public void onConnected(Room room) {
                 WritableMap event = new WritableNativeMap();
                 event.putString("room", room.getName());
+                List<Participant> participants = room.getParticipants();
+
+                WritableArray participantsNames = new WritableNativeArray();
+                for (Participant participant : participants) {
+                    participantsNames.pushString(participant.getIdentity());
+                }
+                event.putArray("participantsNames", participantsNames);
+
                 pushEvent(CustomTwilioVideoView.this, ON_CONNECTED, event);
 
                 //noinspection LoopStatementThatDoesntLoop
-                for (Participant participant : room.getParticipants()) {
+                for (Participant participant : participants) {
                     addParticipant(participant);
                     break;
                 }

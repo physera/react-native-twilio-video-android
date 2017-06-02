@@ -99,9 +99,14 @@ class CustomTwilioVideoView extends Component {
     }
 
     render() {
-        return (
-            <NativeCustomTwilioVideoView {...this.props} />
-        );
+      return (
+        <NativeCustomTwilioVideoView
+          onConnected={(event) => {
+            this.props.onRoomDidConnect && this.props.onRoomDidConnect(event.nativeEvent);
+          }}
+          {...this.props}
+        />
+      );
     }
 }
 
