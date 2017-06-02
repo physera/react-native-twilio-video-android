@@ -39,11 +39,6 @@ public class CustomTwilioVideoViewManager extends SimpleViewManager<CustomTwilio
         return new CustomTwilioVideoView(reactContext);
     }
 
-    @ReactProp(name = "twilioAccessToken")
-    public void setAccessToken(CustomTwilioVideoView view, @Nullable String accessToken) {
-        view.setAccessToken(accessToken);
-    }
-
     @Override
     public void receiveCommand(CustomTwilioVideoView view, int commandId, @Nullable ReadableArray args) {
         switch (commandId) {
