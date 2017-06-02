@@ -30,5 +30,7 @@ public class TwilioVideoPreview extends RNVideoView {
 
     public TwilioVideoPreview(Context context) {
         super(context);
+        CustomTwilioVideoView.registerThumbnailVideoView(this);
+        this.setMirror(true);
     }
 }

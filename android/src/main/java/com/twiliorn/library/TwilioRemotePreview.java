@@ -10,5 +10,6 @@ public class TwilioRemotePreview extends RNVideoView {
 
     public TwilioRemotePreview(Context context) {
         super(context);
+        CustomTwilioVideoView.registerPrimaryVideoView(this);
     }
 }
