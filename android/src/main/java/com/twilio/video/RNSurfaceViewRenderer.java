@@ -8,8 +8,10 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.ViewGroup;
 
 import org.webrtc.EglBase;
 import org.webrtc.GlRectDrawer;
@@ -55,7 +57,7 @@ public class RNSurfaceViewRenderer extends SurfaceView implements SurfaceHolder.
 
     protected RNSurfaceViewRenderer(Context context) {
         super(context);
-        this.scalingType = RendererCommon.ScalingType.SCALE_ASPECT_BALANCED;
+        this.scalingType = RendererCommon.ScalingType.SCALE_ASPECT_FIT;
         this.statisticsLock = new Object();
         this.renderFrameRunnable = new Runnable() {
             public void run() {
@@ -72,7 +74,7 @@ public class RNSurfaceViewRenderer extends SurfaceView implements SurfaceHolder.
 
     protected RNSurfaceViewRenderer(Context context, AttributeSet attrs) {
         super(context, attrs);
-        this.scalingType = RendererCommon.ScalingType.SCALE_ASPECT_BALANCED;
+        this.scalingType = RendererCommon.ScalingType.SCALE_ASPECT_FIT;
         this.statisticsLock = new Object();
         this.renderFrameRunnable = new Runnable() {
             public void run() {
@@ -342,11 +344,7 @@ public class RNSurfaceViewRenderer extends SurfaceView implements SurfaceHolder.
     }
 
     private String getResourceName() {
-        try {
-            return this.getResources().getResourceEntryName(this.getId()) + ": ";
-        } catch (Resources.NotFoundException var2) {
-            return "";
-        }
+        return "";
     }
 
     private void makeBlack() {

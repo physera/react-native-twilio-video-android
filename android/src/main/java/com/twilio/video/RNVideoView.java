@@ -2,9 +2,11 @@ package com.twilio.video;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Point;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.AttributeSet;
+import android.util.Log;
 
 import org.webrtc.RendererCommon;
 
@@ -44,16 +46,6 @@ public class RNVideoView extends RNSurfaceViewRenderer implements VideoRenderer 
         this.mirror = false;
         this.overlaySurface = false;
         this.videoScaleType = VideoScaleType.ASPECT_FIT;
-        TypedArray a = context.getTheme().obtainStyledAttributes(attrs, com.twilio.video.R.styleable.VideoView, 0, 0);
-
-        try {
-            this.mirror = a.getBoolean(com.twilio.video.R.styleable.VideoView_mirror, false);
-            this.videoScaleType = VideoScaleType.fromInt(a.getInteger(com.twilio.video.R.styleable.VideoView_scaleType, 0));
-            this.overlaySurface = a.getBoolean(com.twilio.video.R.styleable.VideoView_overlaySurface, false);
-        } finally {
-            a.recycle();
-        }
-
     }
 
     protected void onAttachedToWindow() {
@@ -119,12 +111,12 @@ public class RNVideoView extends RNSurfaceViewRenderer implements VideoRenderer 
     }
 
     private RendererCommon.ScalingType convertToWebRtcScaleType(VideoScaleType videoScaleType) {
-        switch(videoScaleType.ordinal()) {
-            case 1:
+        switch(videoScaleType) {
+            case ASPECT_FIT:
                 return RendererCommon.ScalingType.SCALE_ASPECT_FIT;
-            case 2:
+            case ASPECT_FILL:
                 return RendererCommon.ScalingType.SCALE_ASPECT_FILL;
-            case 3:
+            case ASPECT_BALANCED:
                 return RendererCommon.ScalingType.SCALE_ASPECT_BALANCED;
             default:
                 return RendererCommon.ScalingType.SCALE_ASPECT_FIT;
