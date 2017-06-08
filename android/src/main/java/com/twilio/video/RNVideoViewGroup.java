@@ -12,12 +12,14 @@ public class RNVideoViewGroup extends ViewGroup {
   private int videoWidth = 0;
   private int videoHeight = 0;
   private final Object layoutSync = new Object();
+  private RendererCommon.ScalingType scalingType = RendererCommon.ScalingType.SCALE_ASPECT_FIT;
 
 
   public RNVideoViewGroup(Context context) {
     super(context);
 
     surfaceViewRenderer = new VideoView(context);
+    surfaceViewRenderer.setVideoScaleType(VideoScaleType.ASPECT_FIT);
     addView(surfaceViewRenderer);
     surfaceViewRenderer.setListener(
         new VideoRenderer.Listener() {
@@ -31,15 +33,19 @@ public class RNVideoViewGroup extends ViewGroup {
             synchronized (layoutSync) {
               videoHeight = vh;
               videoWidth = vw;
+              RNVideoViewGroup.this.forceLayout();
             }
           }
         }
     );
-    Log.i("RNVVG", surfaceViewRenderer.toString());
   }
 
   public VideoView getSurfaceViewRenderer() {
     return surfaceViewRenderer;
+  }
+
+  public void setScalingType(RendererCommon.ScalingType scalingType) {
+    this.scalingType = scalingType;
   }
 
   @Override
@@ -48,27 +54,32 @@ public class RNVideoViewGroup extends ViewGroup {
     int width = r - l;
     if (height == 0 || width == 0) {
       l = t = r = b = 0;
+    } else {
+      int videoHeight;
+      int videoWidth;
+      synchronized (layoutSync) {
+        videoHeight = this.videoHeight;
+        videoWidth = this.videoWidth;
+      }
+
+      if (videoHeight == 0 || videoWidth == 0) {
+        // These are Twilio defaults.
+        videoHeight = 480;
+        videoWidth = 640;
+      }
+
+      Point displaySize = RendererCommon.getDisplaySize(
+          this.scalingType,
+          videoWidth / (float) videoHeight,
+          width,
+          height
+      );
+
+      l = (width - displaySize.x) / 2;
+      t = (height - displaySize.y) / 2;
+      r = l + displaySize.x;
+      b = t + displaySize.y;
     }
-
-    int videoHeight;
-    int videoWidth;
-    synchronized (layoutSync) {
-      videoHeight = this.videoHeight;
-      videoWidth = this.videoWidth;
-    }
-
-    Point displaySize = RendererCommon.getDisplaySize(
-        RendererCommon.ScalingType.SCALE_ASPECT_FIT,
-        videoWidth / (float) videoHeight,
-        width,
-        height
-    );
-
-    l = (width - displaySize.x) / 2;
-    t = (height - displaySize.y) / 2;
-    r = l + displaySize.x;
-    b = t + displaySize.y;
-
     surfaceViewRenderer.layout(l, t, r, b);
   }
 }
