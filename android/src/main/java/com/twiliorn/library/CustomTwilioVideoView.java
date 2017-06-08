@@ -23,12 +23,12 @@ import com.twilio.video.ConnectOptions;
 import com.twilio.video.LocalAudioTrack;
 import com.twilio.video.LocalVideoTrack;
 import com.twilio.video.Participant;
-import com.twilio.video.RNVideoView;
 import com.twilio.video.Room;
 import com.twilio.video.RoomState;
 import com.twilio.video.TwilioException;
 import com.twilio.video.Video;
 import com.twilio.video.VideoTrack;
+import com.twilio.video.VideoView;
 import com.twiliorn.library.permissions.PermissionsManager;
 import com.twiliorn.library.permissions.PermissionsResult;
 
@@ -86,8 +86,8 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
      * A VideoView receives frames from a local or remote video track and renders them
      * to an associated view.
      */
-    private static RNVideoView primaryVideoView;
-    private static RNVideoView thumbnailVideoView;
+    private static VideoView primaryVideoView;
+    private static VideoView thumbnailVideoView;
     private static VideoTrack  participantVideoTrack;
     private static LocalVideoTrack localVideoTrack;
 
@@ -97,7 +97,6 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
     private String          participantIdentity;
     private int             previousAudioMode;
     private boolean         disconnectedFromOnDestroy;
-    private String          accessToken;
 
     public CustomTwilioVideoView(ThemedReactContext context) {
         super(context);
@@ -119,22 +118,14 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
          * Needed for setting/abandoning audio focus during call
          */
         audioManager = (AudioManager) themedReactContext.getSystemService(Context.AUDIO_SERVICE);
-
-        /*
-         * Check camera and microphone permissions. Needed in Android M.
-         */
-        if (!permissionsManager.isCameraGranted() || !permissionsManager.isMicrophoneGranted()) {
-            requestPermissionForCameraAndMicrophone();
-        } else {
-            createLocalMedia();
-        }
     }
 
     // ===== SETUP =================================================================================
 
-    private void createLocalMedia() {
+    private void createLocalMedia(final String accessToken) {
         // Share your microphone
         localAudioTrack = LocalAudioTrack.create(getContext(), true);
+        Log.i("CustomTwilioVideoView", "Create local media");
 
         // Share your camera
         cameraCapturer = new CameraCapturer(
@@ -143,10 +134,7 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
             new CameraCapturer.Listener() {
                 @Override
                 public void onFirstFrameAvailable() {
-                    localVideoTrack = LocalVideoTrack.create(getContext(), true, cameraCapturer);
-                    if (thumbnailVideoView != null && localVideoTrack != null) {
-                        localVideoTrack.addRenderer(thumbnailVideoView);
-                    }
+                    Log.i("CustomTwilioVideoView", "Got a local camera track");
                 }
 
                 @Override
@@ -160,11 +148,19 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
                 }
             }
         );
+
+        if (cameraCapturer.getSupportedFormats().size() > 0) {
+            localVideoTrack = LocalVideoTrack.create(getContext(), true, cameraCapturer);
+            if (thumbnailVideoView != null && localVideoTrack != null) {
+                localVideoTrack.addRenderer(thumbnailVideoView);
+            }
+        }
+        connectToRoom(accessToken);
     }
 
     // ===== PERMISSIONS ===========================================================================
 
-    private void requestPermissionForCameraAndMicrophone() {
+    private void requestPermissionForCameraAndMicrophone(final String accessToken) {
         final Activity activity = themedReactContext.getCurrentActivity();
         if (activity != null) {
             if (permissionsManager.neverAskForCamera(activity) || permissionsManager.neverAskForMicrophone(activity)) {
@@ -175,7 +171,7 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
                                       @Override
                                       public void call(PermissionsResult permissionsResult) {
                                           if (permissionsResult.isGranted()) {
-                                              createLocalMedia();
+                                              createLocalMedia(accessToken);
                                           } else {
                                               showPermissionsNeededSnackbar(activity);
                                           }
@@ -248,6 +244,18 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
     }
 
     // ====== CONNECTING ===========================================================================
+
+    public void connectToRoomWrapper(String accessToken) {
+        /*
+         * Check camera and microphone permissions. Needed in Android M.
+         */
+        Log.i("CustomTwilioVideoView", "Starting connect flow");
+        if (!permissionsManager.isCameraGranted() || !permissionsManager.isMicrophoneGranted()) {
+            requestPermissionForCameraAndMicrophone(accessToken);
+        } else {
+            createLocalMedia(accessToken);
+        }
+    }
 
     public void connectToRoom(String accessToken) {
         /*
@@ -525,14 +533,14 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
         eventEmitter.receiveEvent(view.getId(), name, data);
     }
 
-    public static void registerPrimaryVideoView(RNVideoView v) {
+    public static void registerPrimaryVideoView(VideoView v) {
         primaryVideoView = v;
         if (participantVideoTrack != null) {
             participantVideoTrack.addRenderer(v);
         }
     }
 
-    public static void registerThumbnailVideoView(RNVideoView v) {
+    public static void registerThumbnailVideoView(VideoView v) {
         thumbnailVideoView = v;
         if (localVideoTrack != null) {
             localVideoTrack.addRenderer(v);

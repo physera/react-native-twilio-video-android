@@ -8,7 +8,7 @@ import android.util.Log;
 import org.webrtc.RendererCommon;
 
 public class RNVideoViewGroup extends ViewGroup {
-  private RNVideoView surfaceViewRenderer = null;
+  private VideoView surfaceViewRenderer = null;
   private int videoWidth = 0;
   private int videoHeight = 0;
   private final Object layoutSync = new Object();
@@ -17,7 +17,7 @@ public class RNVideoViewGroup extends ViewGroup {
   public RNVideoViewGroup(Context context) {
     super(context);
 
-    surfaceViewRenderer = new RNVideoView(context);
+    surfaceViewRenderer = new VideoView(context);
     addView(surfaceViewRenderer);
     surfaceViewRenderer.setListener(
         new VideoRenderer.Listener() {
@@ -38,7 +38,7 @@ public class RNVideoViewGroup extends ViewGroup {
     Log.i("RNVVG", surfaceViewRenderer.toString());
   }
 
-  public RNVideoView getSurfaceViewRenderer() {
+  public VideoView getSurfaceViewRenderer() {
     return surfaceViewRenderer;
   }
 
