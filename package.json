@@ -1,6 +1,6 @@
 {
   "name": "react-native-twilio-video-android",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Twilio Video for RN on Android",
   "repository": {
     "type": "git",
