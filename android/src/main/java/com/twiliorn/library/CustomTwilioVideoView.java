@@ -1,7 +1,10 @@
 package com.twiliorn.library;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -49,6 +52,7 @@ import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_DICONNECTED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_PARTICIPANT_CONNECTED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_PARTICIPANT_DISCONNECTED;
 import static com.twiliorn.library.CustomTwilioVideoView.Events.ON_VIDEO_CHANGED;
+
 
 public class CustomTwilioVideoView extends View implements LifecycleEventListener {
 
@@ -99,6 +103,8 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
     private String          participantIdentity;
     private int             previousAudioMode;
     private boolean         disconnectedFromOnDestroy;
+    private IntentFilter intentFilter;
+    private BecomingNoisyReceiver myNoisyAudioStreamReceiver;
 
     public CustomTwilioVideoView(ThemedReactContext context) {
         super(context);
@@ -120,6 +126,8 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
          * Needed for setting/abandoning audio focus during call
          */
         audioManager = (AudioManager) themedReactContext.getSystemService(Context.AUDIO_SERVICE);
+        myNoisyAudioStreamReceiver = new BecomingNoisyReceiver();
+        intentFilter = new IntentFilter(Intent.ACTION_HEADSET_PLUG);
     }
 
     // ===== SETUP =================================================================================
@@ -288,9 +296,22 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
              * speaker mode if this is not set.
              */
             audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
+            audioManager.setSpeakerphoneOn(!audioManager.isWiredHeadsetOn());
+            getContext().registerReceiver(myNoisyAudioStreamReceiver, intentFilter);
         } else {
             audioManager.setMode(previousAudioMode);
             audioManager.abandonAudioFocus(null);
+            audioManager.setSpeakerphoneOn(false);
+            getContext().unregisterReceiver(myNoisyAudioStreamReceiver);
+        }
+    }
+
+    private class BecomingNoisyReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (Intent.ACTION_HEADSET_PLUG.equals(intent.getAction())) {
+                audioManager.setSpeakerphoneOn(!audioManager.isWiredHeadsetOn());
+            }
         }
     }
 
